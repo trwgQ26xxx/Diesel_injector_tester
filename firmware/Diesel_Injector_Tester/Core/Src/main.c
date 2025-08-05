@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdint.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,35 +53,42 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-/* Common definitions */
-#define TRUE	1
-#define FALSE	0
-
-/* Injector periods */
-#define NUMBER_OF_PERIODS	6
-#define DEFAULT_PERIOD_IDX	2	//1Hz
-
-const uint16_t auto_reload_periods[NUMBER_OF_PERIODS] = {50000, 20000, 10000, 5000, 2000, 1000};	//0.2Hz, 0.5Hz, 1Hz, 2Hz, 5Hz, 10Hz
-
-/* Keyboard definitions */
-#define KEYBOARD_TIME	200	//ms
-
-#define PERIOD_KEY_IS_PRESSED			(!(LL_GPIO_IsInputPinSet(PERIOD_BTN_GPIO_Port, PERIOD_BTN_Pin)))
-#define ENABLE_KEY_IS_PRESSED			(!(LL_GPIO_IsInputPinSet(ON_BTN_GPIO_Port, ON_BTN_Pin)))
-#define ALL_KEYS_ARE_RELEASED			(LL_GPIO_IsInputPinSet(PERIOD_BTN_GPIO_Port, PERIOD_BTN_Pin) && LL_GPIO_IsInputPinSet(ON_BTN_GPIO_Port, ON_BTN_Pin))
-
-#define CLEAR_KBD_TIMER					LL_TIM_SetCounter(TIM14, 0)
-
-/* LEDs definitions */
-#define ENABLE_LED_ON					LL_GPIO_ResetOutputPin(ON_LED_GPIO_Port, ON_LED_Pin)
-#define ENABLE_LED_OFF					LL_GPIO_SetOutputPin(ON_LED_GPIO_Port, ON_LED_Pin)
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void Change_period(uint16_t period, uint8_t pulses_enabled)
+/* ----------------------------------- LED ----------------------------------- */
+
+/* LEDs definitions */
+#define ENABLE_LED_ON			LL_GPIO_ResetOutputPin(ON_LED_GPIO_Port, ON_LED_Pin)
+#define ENABLE_LED_OFF			LL_GPIO_SetOutputPin(ON_LED_GPIO_Port, ON_LED_Pin)
+
+/* ------------------------------ OUTPUT TIMER ------------------------------- */
+
+/* Injector periods */
+#define NUMBER_OF_PERIODS	6
+#define DEFAULT_PERIOD_IDX	2	//1Hz
+
+#define MINIMUM_PERIOD		500	//20Hz
+
+void Init_output_timer(uint16_t default_period)
+{
+	/* Set default period */
+	LL_TIM_SetAutoReload(TIM1, (default_period > MINIMUM_PERIOD) ? (default_period - 1) : MINIMUM_PERIOD);
+
+	/* Enable outputs */
+	LL_TIM_EnableAllOutputs(TIM1);
+
+	/* Enable counter */
+	LL_TIM_EnableCounter(TIM1);
+
+	/* Enable pulse LED, disable INJ pulses */
+	LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3);
+	LL_TIM_CC_DisableChannel(TIM1, LL_TIM_CHANNEL_CH2);
+}
+
+void Change_output_timer_period(uint16_t period, uint8_t pulses_enabled)
 {
 	/* Disable outputs and timer counter */
 	LL_TIM_CC_DisableChannel(TIM1, LL_TIM_CHANNEL_CH2);
@@ -91,19 +99,102 @@ void Change_period(uint16_t period, uint8_t pulses_enabled)
 	LL_TIM_SetCounter(TIM1, 0);
 
 	/* Change period */
-	LL_TIM_SetAutoReload(TIM1, period-1);
+	LL_TIM_SetAutoReload(TIM1, (period > MINIMUM_PERIOD) ? (period - 1) : MINIMUM_PERIOD);
 
 	/* Enable LED */
 	LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3);
 
 	/* Enable INJ pulses back only if flag is set */
-	if(pulses_enabled == TRUE)
+	if(pulses_enabled == true)
 	{
 		LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2);
 	}
 
 	/* Enable counter back again */
 	LL_TIM_EnableCounter(TIM1);
+}
+
+/* -------------------------------- KEYBOARD --------------------------------- */
+
+/* Keyboard definitions */
+#define KEYBOARD_DEBOUNCE_TIME	200	//ms
+
+#define PERIOD_KEY_IS_PRESSED	(!(LL_GPIO_IsInputPinSet(PERIOD_BTN_GPIO_Port, PERIOD_BTN_Pin)))
+#define ENABLE_KEY_IS_PRESSED	(!(LL_GPIO_IsInputPinSet(ON_BTN_GPIO_Port, ON_BTN_Pin)))
+#define ALL_KEYS_ARE_RELEASED	(LL_GPIO_IsInputPinSet(PERIOD_BTN_GPIO_Port, PERIOD_BTN_Pin) && LL_GPIO_IsInputPinSet(ON_BTN_GPIO_Port, ON_BTN_Pin))
+
+#define CLEAR_KBD_TIMER			LL_TIM_SetCounter(TIM14, 0)
+
+enum KEYBOARD_KEYS
+{
+	NO_KEY		= 0,
+	PERIOD_KEY	= 1,
+	ENABLE_KEY	= 2
+};
+
+volatile uint8_t keyboard_locked = true;
+
+void Init_keyboard(void)
+{
+	/* Keyboard is locked by default, to prevent accidental changes */
+	keyboard_locked = true;
+
+	/* Init keyboard timer */
+	LL_TIM_EnableCounter(TIM14);
+
+	/* Clear keyboard timer */
+	CLEAR_KBD_TIMER;
+}
+
+uint8_t Get_keyboard_key(void)
+{
+	uint8_t key = NO_KEY;
+
+	/* Check if keyboard is unlocked */
+	if(keyboard_locked == false)
+	{
+		if(PERIOD_KEY_IS_PRESSED)
+		{
+			/* If PERIOD key is pressed, set key to PERIOD_KEY */
+			key = PERIOD_KEY;
+
+			/* Debounce keys */
+			keyboard_locked = true;
+			CLEAR_KBD_TIMER;
+		}
+		else if(ENABLE_KEY_IS_PRESSED)
+		{
+			/* If ENABLE key is pressed, set key to ENABLE_KEY */
+			key = ENABLE_KEY;
+
+			/* Debounce keys */
+			keyboard_locked = true;
+			CLEAR_KBD_TIMER;
+		}
+	}
+	else
+	{
+		/* If keyboard is locked, check if timer has expired */
+		if(LL_TIM_GetCounter(TIM14) > KEYBOARD_DEBOUNCE_TIME)
+		{
+			/* Unlock keyboard if all keys are released */
+			if(ALL_KEYS_ARE_RELEASED)
+			{
+				/* Unlock keyboard */
+				keyboard_locked = false;
+			}
+			else
+			{
+				/* Reset timer, wait another period */
+				CLEAR_KBD_TIMER;
+			}
+		}
+
+		/* If keyboard is locked, return NO_KEY */
+		key = NO_KEY;
+	}
+
+	return key;
 }
 
 /* USER CODE END 0 */
@@ -146,30 +237,21 @@ int main(void)
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 
-	uint8_t keyboard_locked = TRUE;
+	/* Handle WDT */
+	LL_IWDG_ReloadCounter(IWDG);
 
-	uint8_t injector_pulses_enabled = FALSE;
-	uint8_t current_period = DEFAULT_PERIOD_IDX;
+	const uint16_t auto_reload_periods[NUMBER_OF_PERIODS] = {50000, 20000, 10000, 5000, 2000, 1000};	//0.2Hz, 0.5Hz, 1Hz, 2Hz, 5Hz, 10Hz
 
-	/* Set default period */
-	LL_TIM_SetAutoReload(TIM1, auto_reload_periods[DEFAULT_PERIOD_IDX]-1);		//1Hz
-
-	/* Enable outputs */
-	LL_TIM_EnableAllOutputs(TIM1);
-
-	/* Enable counter */
-	LL_TIM_EnableCounter(TIM1);
-
-	/* Enable pulse LED, disable INJ pulses */
-	LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3);
-	LL_TIM_CC_DisableChannel(TIM1, LL_TIM_CHANNEL_CH2);
+	uint8_t injector_pulses_enabled	= false;
+	uint8_t current_period			= DEFAULT_PERIOD_IDX;
 
 	ENABLE_LED_OFF;
 
-	/* Init keyboard timer */
-	LL_TIM_EnableCounter(TIM14);
+	/* Init output timer */
+	Init_output_timer(auto_reload_periods[DEFAULT_PERIOD_IDX]);	//1Hz
 
-	CLEAR_KBD_TIMER;
+	/* Init keyboard */
+	Init_keyboard();
 
   /* USER CODE END 2 */
 
@@ -177,10 +259,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		if(keyboard_locked == FALSE)
+		switch(Get_keyboard_key())
 		{
-			if(PERIOD_KEY_IS_PRESSED)
-			{
+			case PERIOD_KEY:
+
 				/* Switch to next period */
 				current_period++;
 				if(current_period >= NUMBER_OF_PERIODS)
@@ -189,51 +271,33 @@ int main(void)
 				}
 
 				/* Update settings */
-				Change_period(auto_reload_periods[current_period], injector_pulses_enabled);
+				Change_output_timer_period(auto_reload_periods[current_period], injector_pulses_enabled);
+				break;
 
-				/* Debounce keys */
-				keyboard_locked = TRUE;
-				CLEAR_KBD_TIMER;
-			}
-			else if(ENABLE_KEY_IS_PRESSED)
-			{
-				/* Toggle enable flag */
-				if(injector_pulses_enabled == TRUE)
+			case ENABLE_KEY:
+
+				/* Toggle enable flag */
+				if(injector_pulses_enabled == true)
 				{
 					ENABLE_LED_OFF;
 
-					injector_pulses_enabled = FALSE;
+					injector_pulses_enabled = false;
 				}
 				else
 				{
 					ENABLE_LED_ON;
 
-					injector_pulses_enabled = TRUE;
+					injector_pulses_enabled = true;
 				}
 
 				/* Update settings */
-				Change_period(auto_reload_periods[current_period], injector_pulses_enabled);
+				Change_output_timer_period(auto_reload_periods[current_period], injector_pulses_enabled);
+				break;
 
-				/* Debounce keys */
-				keyboard_locked = TRUE;
-				CLEAR_KBD_TIMER;
-			}
-		}
-		else if(keyboard_locked == TRUE)
-		{
-			if(LL_TIM_GetCounter(TIM14) > KEYBOARD_TIME)
-			{
-				/* Unlock keyboard if all keys are released */
-				if(ALL_KEYS_ARE_RELEASED)
-				{
-					keyboard_locked = FALSE;
-				}
-				else
-				{
-					/* Reset timer */
-					CLEAR_KBD_TIMER;
-				}
-			}
+			default:
+
+				/* No key pressed, do nothing */
+				break;
 		}
 
 		/* Handle WDT */
