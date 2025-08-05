@@ -1,6 +1,6 @@
-/PCB/GERBERS*
-/PCB/*cache
-/PCB/*backups/
+/PCB/Diesel_Injector_Tester/GERBERS*
+/PCB/Diesel_Injector_Tester/*cache
+/PCB/Diesel_Injector_Tester/*backups/
 /firmware/.metadata/
 /firmware/Diesel_Injector_Tester/*.launch
 /firmware/Diesel_Injector_Tester/.metadata/
