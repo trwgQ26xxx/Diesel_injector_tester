@@ -1,0 +1,9 @@
+/PCB/GERBERS*
+/PCB/*cache
+/PCB/*backups/
+/firmware/.metadata/
+/firmware/Diesel_Injector_Tester/*.launch
+/firmware/Diesel_Injector_Tester/.metadata/
+/firmware/Diesel_Injector_Tester/.settings/
+/firmware/Diesel_Injector_Tester/Debug/
+/firmware/Diesel_Injector_Tester/Release/
