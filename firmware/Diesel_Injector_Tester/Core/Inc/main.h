@@ -73,16 +73,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define ON_BTN_Pin LL_GPIO_PIN_2
-#define ON_BTN_GPIO_Port GPIOA
-#define PERIOD_BTN_Pin LL_GPIO_PIN_3
-#define PERIOD_BTN_GPIO_Port GPIOA
-#define ON_LED_Pin LL_GPIO_PIN_4
-#define ON_LED_GPIO_Port GPIOA
-#define INJ_SIGNAL_Pin LL_GPIO_PIN_9
-#define INJ_SIGNAL_GPIO_Port GPIOA
-#define LED_SIGNAL_Pin LL_GPIO_PIN_10
-#define LED_SIGNAL_GPIO_Port GPIOA
+#define PERIOD_KEY_Pin LL_GPIO_PIN_2
+#define PERIOD_KEY_GPIO_Port GPIOA
+#define ENABLE_KEY_Pin LL_GPIO_PIN_3
+#define ENABLE_KEY_GPIO_Port GPIOA
+#define ENABLE_LED_Pin LL_GPIO_PIN_4
+#define ENABLE_LED_GPIO_Port GPIOA
+#define INJ_PULSES_Pin LL_GPIO_PIN_9
+#define INJ_PULSES_GPIO_Port GPIOA
+#define PERIOD_LED_Pin LL_GPIO_PIN_10
+#define PERIOD_LED_GPIO_Port GPIOA
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

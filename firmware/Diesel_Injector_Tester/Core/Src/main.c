@@ -61,8 +61,8 @@ void SystemClock_Config(void);
 /* ----------------------------------- LED ----------------------------------- */
 
 /* LEDs definitions */
-#define ENABLE_LED_ON			LL_GPIO_ResetOutputPin(ON_LED_GPIO_Port, ON_LED_Pin)
-#define ENABLE_LED_OFF			LL_GPIO_SetOutputPin(ON_LED_GPIO_Port, ON_LED_Pin)
+#define ENABLE_LED_ON			LL_GPIO_ResetOutputPin(ENABLE_LED_GPIO_Port, ENABLE_LED_Pin)
+#define ENABLE_LED_OFF			LL_GPIO_SetOutputPin(ENABLE_LED_GPIO_Port, ENABLE_LED_Pin)
 
 /* ------------------------------ OUTPUT TIMER ------------------------------- */
 
@@ -119,9 +119,9 @@ void Change_output_timer_period(uint16_t period, uint8_t pulses_enabled)
 /* Keyboard definitions */
 #define KEYBOARD_DEBOUNCE_TIME	200	//ms
 
-#define PERIOD_KEY_IS_PRESSED	(!(LL_GPIO_IsInputPinSet(PERIOD_BTN_GPIO_Port, PERIOD_BTN_Pin)))
-#define ENABLE_KEY_IS_PRESSED	(!(LL_GPIO_IsInputPinSet(ON_BTN_GPIO_Port, ON_BTN_Pin)))
-#define ALL_KEYS_ARE_RELEASED	(LL_GPIO_IsInputPinSet(PERIOD_BTN_GPIO_Port, PERIOD_BTN_Pin) && LL_GPIO_IsInputPinSet(ON_BTN_GPIO_Port, ON_BTN_Pin))
+#define PERIOD_KEY_IS_PRESSED	(!(LL_GPIO_IsInputPinSet(PERIOD_KEY_GPIO_Port, PERIOD_KEY_Pin)))
+#define ENABLE_KEY_IS_PRESSED	(!(LL_GPIO_IsInputPinSet(ENABLE_KEY_GPIO_Port, ENABLE_KEY_Pin)))
+#define ALL_KEYS_ARE_RELEASED	(LL_GPIO_IsInputPinSet(PERIOD_KEY_GPIO_Port, PERIOD_KEY_Pin) && LL_GPIO_IsInputPinSet(ENABLE_KEY_GPIO_Port, ENABLE_KEY_Pin))
 
 #define CLEAR_KBD_TIMER			LL_TIM_SetCounter(TIM14, 0)
 
@@ -315,8 +315,8 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-  LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
-  while(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_0)
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
+  while(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_1)
   {
   }
   LL_RCC_HSE_Enable();
@@ -333,17 +333,25 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSE);
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE_DIV_1, LL_RCC_PLL_MUL_4);
+  LL_RCC_PLL_Enable();
 
-   /* Wait till System clock is ready */
-  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSE)
+   /* Wait till PLL is ready */
+  while(LL_RCC_PLL_IsReady() != 1)
   {
 
   }
-  LL_Init1msTick(8000000);
-  LL_SetSystemCoreClock(8000000);
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_4);
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+
+   /* Wait till System clock is ready */
+  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL)
+  {
+
+  }
+  LL_Init1msTick(10000000);
+  LL_SetSystemCoreClock(10000000);
 }
 
 /* USER CODE BEGIN 4 */

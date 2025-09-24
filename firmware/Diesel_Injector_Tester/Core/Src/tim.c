@@ -43,7 +43,7 @@ void MX_TIM1_Init(void)
   /* USER CODE BEGIN TIM1_Init 1 */
 
   /* USER CODE END TIM1_Init 1 */
-  TIM_InitStruct.Prescaler = 799;
+  TIM_InitStruct.Prescaler = 999;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 1999;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
@@ -83,21 +83,21 @@ void MX_TIM1_Init(void)
     PA9     ------> TIM1_CH2
     PA10     ------> TIM1_CH3
     */
-  GPIO_InitStruct.Pin = INJ_SIGNAL_Pin;
+  GPIO_InitStruct.Pin = INJ_PULSES_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
-  LL_GPIO_Init(INJ_SIGNAL_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(INJ_PULSES_GPIO_Port, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = LED_SIGNAL_Pin;
+  GPIO_InitStruct.Pin = PERIOD_LED_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
-  LL_GPIO_Init(LED_SIGNAL_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(PERIOD_LED_GPIO_Port, &GPIO_InitStruct);
 
 }
 /* TIM14 init function */
@@ -116,7 +116,7 @@ void MX_TIM14_Init(void)
   /* USER CODE BEGIN TIM14_Init 1 */
 
   /* USER CODE END TIM14_Init 1 */
-  TIM_InitStruct.Prescaler = 7999;
+  TIM_InitStruct.Prescaler = 9999;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 65535;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
