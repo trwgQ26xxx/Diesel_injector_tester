@@ -61,8 +61,8 @@ void SystemClock_Config(void);
 /* ----------------------------------- LED ----------------------------------- */
 
 /* LEDs definitions */
-#define ENABLE_LED_ON			LL_GPIO_ResetOutputPin(ENABLE_LED_GPIO_Port, ENABLE_LED_Pin)
-#define ENABLE_LED_OFF			LL_GPIO_SetOutputPin(ENABLE_LED_GPIO_Port, ENABLE_LED_Pin)
+#define ENABLE_LED_ON			LL_GPIO_SetOutputPin(ENABLE_LED_GPIO_Port, ENABLE_LED_Pin)
+#define ENABLE_LED_OFF			LL_GPIO_ResetOutputPin(ENABLE_LED_GPIO_Port, ENABLE_LED_Pin)
 
 /* ------------------------------ OUTPUT TIMER ------------------------------- */
 
