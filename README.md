@@ -4,7 +4,7 @@
 
 ![TESTER_1](PHOTOS/TESTER_1.JPG)
 
-Generates high-current, short pulses (100us) with a selectable repetition rate: 0.2Hz, 0.5Hz, 1Hz, 2Hz, 5Hz, or 10Hz.
+Generates high-current, short pulses (200us) with a selectable repetition rate: 0.2Hz, 0.5Hz, 1Hz, 2Hz, 5Hz, or 10Hz.
 
 The tester is operated using two buttons:
 
