@@ -5192,7 +5192,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3k3"
+		(property "Value" "680"
 			(at 134.62 162.5599 0)
 			(effects
 				(font
@@ -6495,7 +6495,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3k3"
+		(property "Value" "680"
 			(at 110.49 162.5599 0)
 			(effects
 				(font
@@ -8329,7 +8329,7 @@
 				)
 			)
 		)
-		(property "Value" "8MHz"
+		(property "Value" "10MHz"
 			(at 88.9 87.63 0)
 			(effects
 				(font
@@ -8390,7 +8390,7 @@
 		(fields_autoplaced yes)
 		(uuid "9529c4d0-63c0-4aaf-99ad-c541d89fc9e8")
 		(property "Reference" "C10"
-			(at 99.06 106.68 0)
+			(at 99.06 106.6799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8398,8 +8398,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "22p"
-			(at 99.06 109.22 0)
+		(property "Value" "18p"
+			(at 99.06 109.2199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9420,7 +9420,7 @@
 		(fields_autoplaced yes)
 		(uuid "d2620bb6-08f0-4916-98e2-b30e89fec363")
 		(property "Reference" "C9"
-			(at 86.36 106.68 0)
+			(at 86.36 106.6799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9428,8 +9428,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "22p"
-			(at 86.36 109.22 0)
+		(property "Value" "18p"
+			(at 86.36 109.2199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10053,7 +10053,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3k3"
+		(property "Value" "680"
 			(at 158.75 162.5599 0)
 			(effects
 				(font
