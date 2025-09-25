@@ -1,22 +1,28 @@
 # Diesel Injector Tester
 
+**A small tester generating short 200 Âµs pulses needed for testing the opening of electromagnetic diesel injectors with a selectable repetition period.**
+
+![TESTER_1](PHOTOS/TESTER_1.JPG)
+
 Generates high-current, short pulses (100us) with a selectable repetition rate: 0.2Hz, 0.5Hz, 1Hz, 2Hz, 5Hz, or 10Hz.
 
 The tester is operated using two buttons:
 
-* *ENABLE* - Toggles the high-current output on or off
-* *PERIOD* - Cycles through available repetition rates
+* *ENABLE* - Toggles the high-current output on or off.
+* *PERIOD* - Cycles through available repetition rates.
 
 Status is indicated by two LEDs:
 
-* *PERIOD* LED blinks at the selected repetition rate
-* *ENABLE* LED is lit when the high-current output is active
+* *PERIOD* LED blinks at the selected repetition rate.
+* *ENABLE* LED is lit when the high-current output is active.
+
+![TESTER_2](PHOTOS/TESTER_2.JPG)
 
 # Disclaimer
 
 I do not consent to the use of all or part of the project for commercial purposes!
 
-Nie wyra¿am zgody na wykorzystanie ca³oœci b¹dŸ czêœci projektu w celach zarobkowych!
+Nie wyraÅ¼am zgody na wykorzystanie caÅ‚oÅ›ci bÄ…dÅº czÄ™Å›ci projektu w celach zarobkowych!
 
 # License
 
